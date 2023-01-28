@@ -108,8 +108,7 @@ configure.checks.implicit_function_declaration.whitelist-append \
     sched_setaffinity
 
 # http://bugs.winehq.org/show_bug.cgi?id=35310
-configure.install \
-    ${worksrcpath}/tools/install-sh
+configure.install ${worksrcpath}/tools/install-sh
 
 configure.args \
     --without-alsa \
@@ -152,10 +151,6 @@ configure.args.i386         --without-vulkan
 configure.args.x86_64       --with-vulkan
 configure.env.x86_64        ac_cv_lib_soname_vulkan=
 
-if {([llength ${supported_archs}] > 1) && (${os.major} < 19)} {
-    default_variants +universal
-}
-
 variant gstreamer description {Build ${subport} with gstreamer support} {
     depends_lib-append \
         port:gstreamer1 \
@@ -171,7 +166,7 @@ variant gstreamer description {Build ${subport} with gstreamer support} {
 #    configure.args-replace  --without-usb --with-usb
 #}
 
-default_variants-append     +gstreamer
+default_variants            +universal +gstreamer
 
 triplet.add_build           cross
 
