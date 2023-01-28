@@ -226,8 +226,6 @@ destroot.target             install-lib
 if {${os.major} > 18} {
     depends_build-append    port:cx-llvm
 
-    patchfiles-append       1001-remove-cross_compiling-check.diff
-
     configure.cc            ${prefix}/libexec/cx-llvm/bin/clang
     configure.cxx           ${prefix}/libexec/cx-llvm/bin/clang++
     configure.cmd           ${worksrcpath}/configure
@@ -318,6 +316,10 @@ if {[variant_isset universal]} {
 
         See the Wine FAQ for details: https://wiki.winehq.org/FAQ#Wineprefixes
     "
+}
+
+platform darwin arm {
+    patchfiles.x86_64       1001-remove-cross_compiling-check.diff
 }
 
 livecheck.type              regex
