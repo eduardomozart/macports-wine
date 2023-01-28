@@ -255,7 +255,8 @@ if {${os.major} > 18} {
     configure.cmd           ${worksrcpath}/configure
     configure.compiler.add_deps no
 
-    configure.args-append   --disable-winedbg
+    configure.args-prepend \
+        --disable-winedbg
 
     configure.pre_args.i386-append \
         --enable-win32on64 \
