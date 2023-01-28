@@ -158,8 +158,6 @@ if {([llength ${supported_archs}] > 1) && (${os.major} < 19)} {
     default_variants +universal
 }
 
-if {${os.major} > 18} { macosx_deployment_target 10.14 }
-
 if {${os.major} >= 15} {
     depends_lib-append      path:lib/libMoltenVK.dylib:MoltenVK
     if {"i386" in ${configure.universal_archs}} {
@@ -220,8 +218,8 @@ configure.cflags-append     -Wno-deprecated-declarations
 destroot.target             install-lib
 
 if {${os.major} > 18} {
+    macosx_deployment_target 10.14
     depends_build-append    port:cx-llvm
-
     configure.cc            ${prefix}/libexec/cx-llvm/bin/clang
     configure.cxx           ${prefix}/libexec/cx-llvm/bin/clang++
     configure.cmd           ${worksrcpath}/configure
