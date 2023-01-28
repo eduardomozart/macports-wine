@@ -193,9 +193,11 @@ if {${os.major} >= 15} {
 }
 
 if {${os.major} < 15} {
-    depends_build-append    port:MacOSX10.11.sdk
-    configure.sdkroot       ${prefix}/Developer/SDKs/MacOSX10.11.sdk
-
+    configure.sdk_version   10.11
+    if {${configure.sdkroot} eq ""} {
+        depends_build-append    port:MacOSX10.11.sdk
+        configure.sdkroot       ${prefix}/Developer/SDKs/MacOSX10.11.sdk
+    }
     # https://gitlab.winehq.org/wine/wine/-/commit/0699089f0ea65c8d66b2cdcdb0731c432720969e
     configure.env-append    ac_cv_header_Metal_Metal_h=
 }
