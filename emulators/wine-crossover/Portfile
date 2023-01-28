@@ -160,7 +160,6 @@ configure.args \
     --without-v4l2 \
     --without-x
 
-# wine_dlopen() was deprecated in favor of dlopen() causing wine(64) to longer finds dylibs, since wine-5.6
 # https://bugs.winehq.org/show_bug.cgi?id=49199
 configure.ldflags-append \
     -Wl,-rpath,${prefix}/lib
@@ -186,13 +185,9 @@ if {${os.major} >= 15} {
     if {"i386" in ${configure.universal_archs}} {
         depends_skip_archcheck-append MoltenVK
     }
-
     configure.args.i386     --without-vulkan
     configure.args.x86_64   --with-vulkan
-
-    configure.env.x86_64 \
-        ac_cv_lib_soname_MoltenVK=libMoltenVK.dylib \
-        ac_cv_lib_soname_vulkan=
+    configure.env.x86_64    ac_cv_lib_soname_vulkan=
 } else {
     configure.args-append   --without-vulkan
 }
@@ -201,8 +196,6 @@ if {${os.major} < 15} {
     depends_build-append    port:MacOSX10.11.sdk
     configure.sdkroot       ${prefix}/Developer/SDKs/MacOSX10.11.sdk
 
-    # Avoid linking Metal or rev-upgrade will cry
-    # Support GPU initialization via Metal, since wine-4.15
     # https://gitlab.winehq.org/wine/wine/-/commit/0699089f0ea65c8d66b2cdcdb0731c432720969e
     configure.env-append    ac_cv_header_Metal_Metal_h=
 }
@@ -273,7 +266,6 @@ if {${os.major} > 18} {
 
         configure.pre_args.x86_64
         configure.args.x86_64
-        configure.post_args.x86_64
         set configure.dir ${worksrcpath}-i386
         configure.args ${configure.pre_args.i386} ${configure.args} ${configure.args.i386}
         portconfigure::configure_main
