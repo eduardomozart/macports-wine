@@ -5,7 +5,6 @@ PortGroup                   compiler_blacklist_versions 1.0
 PortGroup                   legacysupport 1.1
 PortGroup                   muniversal 1.1
 
-# ntdll requires fstatat, since wine-5.9
 # https://github.com/wine-staging/wine-staging/commit/762c0e704003f802a5f3470aedd80799cb18c9ef
 legacysupport.newest_darwin_requires_legacy 13
 
@@ -85,16 +84,9 @@ depends_run \
 
 patch.pre_args -p1
 
-# Patch provided by Josh Dubois, CrossOver product manager, CodeWeavers
 patchfiles-append \
-    0001-distversion.diff
-
-# This allows wine to use curl-ca-bundle.crt
-patchfiles-append \
-    0002-crypt32-expand-cert-search-paths.diff
-
-# Remove cxmenu functions
-patchfiles-append \
+    0001-distversion.diff \
+    0002-crypt32-expand-cert-search-paths.diff \
     0003-winemenubuilder-remove-cxmenu.diff
 
 # openal32: Remove dll, remove CX23
@@ -122,8 +114,6 @@ configure.checks.implicit_function_declaration.whitelist-append \
     gethostbyname_r \
     sched_setaffinity
 
-# wine requires the program specified in INSTALL to create intermediate
-# directories; /usr/bin/install doesn't.
 # http://bugs.winehq.org/show_bug.cgi?id=35310
 configure.install \
     ${worksrcpath}/tools/install-sh
@@ -161,14 +151,10 @@ configure.args \
     --without-x
 
 # https://bugs.winehq.org/show_bug.cgi?id=49199
-configure.ldflags-append \
-    -Wl,-rpath,${prefix}/lib
+configure.ldflags-append -Wl,-rpath,${prefix}/lib
 
-configure.pre_args.i386 \
-    --with-wine64=${workpath}/${worksrcdir}-x86_64
-
-configure.pre_args.x86_64 \
-    --enable-win64
+configure.pre_args.i386     --with-wine64=${workpath}/${worksrcdir}-x86_64
+configure.pre_args.x86_64   --enable-win64
 
 if {([llength ${supported_archs}] > 1) && (${os.major} < 19)} {
     default_variants +universal
@@ -225,7 +211,6 @@ default_variants-append     +gstreamer
 
 triplet.add_build           cross
 
-# macports-base injects a number of flags that now propagate to mingw-gcc this causes the build to fail since, wine-7.21
 # https://gitlab.winehq.org/wine/wine/-/commit/b1f59bc679a8c2dea18a6789a5b9b1a1ae825129
 compiler.limit_flags        yes
 muniversal.arch_flag        no
@@ -237,7 +222,7 @@ configure.env-append        CROSSCFLAGS=${configure.optflags}
 # Reduce compilation warnings
 configure.cflags-append     -Wno-deprecated-declarations
 
-# Were only installing wine not the development files
+# We're only installing wine not the development files
 destroot.target             install-lib
 
 if {${os.major} > 18} {
@@ -249,9 +234,6 @@ if {${os.major} > 18} {
     configure.cxx           ${prefix}/libexec/cx-llvm/bin/clang++
     configure.cmd           ${worksrcpath}/configure
     configure.compiler.add_deps no
-
-    configure.args-prepend \
-        --disable-winedbg
 
     configure.pre_args.i386-append \
         --enable-win32on64 \
@@ -290,8 +272,6 @@ if {${os.major} > 18} {
     }
 
     post-destroot {
-        # CX22 uses upstreams experimental wow64 system so uses wine64 for everything
-        # copy wine64(-preloader) to wine(-preloader) for consistancy and winetricks compatability
         copy ${destroot}${prefix}/bin/wine64 ${destroot}${prefix}/bin/wine
         copy ${destroot}${prefix}/bin/wine64-preloader ${destroot}${prefix}/bin/wine-preloader
     }
