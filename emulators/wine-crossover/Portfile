@@ -149,7 +149,7 @@ configure.args \
     --without-x
 
 # https://bugs.winehq.org/show_bug.cgi?id=49199
-configure.ldflags-append -Wl,-rpath,${prefix}/lib
+configure.ldflags-append    -Wl,-rpath,${prefix}/lib
 
 configure.pre_args.i386     --with-wine64=${workpath}/${worksrcdir}-x86_64
 configure.pre_args.x86_64   --enable-win64
@@ -158,12 +158,8 @@ if {([llength ${supported_archs}] > 1) && (${os.major} < 19)} {
     default_variants +universal
 }
 
-# Avoid weird linker errors with Xcode 10 and later
-if {${os.major} > 18} {
-    macosx_deployment_target 10.14
-}
+if {${os.major} > 18} { macosx_deployment_target 10.14 }
 
-# Vulkan is supported on macOS through MoltenVK, since wine-3.13
 if {${os.major} >= 15} {
     depends_lib-append      path:lib/libMoltenVK.dylib:MoltenVK
     if {"i386" in ${configure.universal_archs}} {
